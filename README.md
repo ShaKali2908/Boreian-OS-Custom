@@ -1,11 +1,11 @@
-### Boreian OS: Performance Meets Design (Debian 13 Based) ###
+# Boreian OS: Performance Meets Design (Debian 13 Based) #
 Maximizing aesthetics on minimal hardware.
 
 This project was born out of personal mission: Why choose between modern desktop effects and fluid performance? Boreian OS is a highly optimized Live-ISO proving that "Potato Hardware" and KDE Plasma 6 with Cairo-Dock are not a contradiction!
 
 
 
-# The Technical Core #
+## The Technical Core ##
 Unlike standard distributions that aim for the lowest common denominator, this system is a precision tool engineered for older hardware:
 
 1. Custom Bore-Kernel: A Vanilla kernel (6.17) semi-manually enhanced with the Bore-Patch (6.18). This combines Debian’s rock-solid stability with aggressive CPU scheduling for noticeably better responsiveness under heavy load.
@@ -16,7 +16,7 @@ Unlike standard distributions that aim for the lowest common denominator, this s
 
 
 
-# Key Features #
+## Key Features ##
 
 1. Optimized for "Potato Hardware": Aggressive resource management minimizes bottlenecks on slow CPUs and limited RAM. Visual effects run smoothly where other distros would stutter.
 
@@ -28,7 +28,7 @@ Unlike standard distributions that aim for the lowest common denominator, this s
 
 
 
-# Why Boreian OS? #
+## Why Boreian OS? ##
 
 Boreian OS is a passion project for those who want the best of both worlds:
 
@@ -40,7 +40,7 @@ Boreian OS is a passion project for those who want the best of both worlds:
 
 
 
-# Installation & Usage #
+## Installation & Usage ##
 
 1. Download: Grab the latest Live-ISO from the [Releases] section.
 
@@ -52,7 +52,7 @@ Boreian OS is a passion project for those who want the best of both worlds:
 
 
 
-## Note for Developers ##
+### Note for Developers ###
 The magic of this system lies in the Technical Hooks. These handle hardware detection and automated performance scaling at boot. Check the /hooks directory to see how the performance specifications are implemented.
 
 
