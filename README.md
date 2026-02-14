@@ -105,7 +105,7 @@ Boreian is a custom implementation that leverages several incredible Open Source
 * **Debian GNU/Linux:** The rock-solid foundation of this ISO (Testing/Trixie branch).
 * **KDE Plasma:** The desktop environment providing the visual framework.
 
-### Licensing
+#### Licensing ####
 * **My Custom Code:** All original hooks, scripts, and configuration files in this repository are released under the **MIT License**. Feel free to use, modify, and share!
 * **Upstream Components:** The Linux Kernel and Bore-patch are subject to their respective **GPL licenses**. 
 * **Disclaimer:** This project is a non-commercial "passion project." It is provided "as is" without any warranty.
