@@ -93,3 +93,23 @@ Choosing the right foundation was critical for the Boreian project. While Debian
 The magic of this system lies in the Technical Hooks. These handle hardware detection and automated performance scaling at boot. Check the /hooks directory to see how the performance specifications are implemented.
 
 
+
+
+
+#### Credits & Legal Notes ####
+
+Boreian is a custom implementation that leverages several incredible Open Source projects. While this repository contains my unique hooks, design specifications, and optimization logic, it wouldn't be possible without:
+
+* **The Linux Kernel:** The vanilla kernel base (from [kernel.org](https://www.kernel.org)).
+* **The Bore Scheduler:** The CPU scheduling magic originally developed by Firefart and the CachyOS team.
+* **Debian GNU/Linux:** The rock-solid foundation of this ISO (Testing/Trixie branch).
+* **KDE Plasma:** The desktop environment providing the visual framework.
+
+### Licensing
+* **My Custom Code:** All original hooks, scripts, and configuration files in this repository are released under the **MIT License**. Feel free to use, modify, and share!
+* **Upstream Components:** The Linux Kernel and Bore-patch are subject to their respective **GPL licenses**. 
+* **Disclaimer:** This project is a non-commercial "passion project." It is provided "as is" without any warranty.
+
+
+
+
