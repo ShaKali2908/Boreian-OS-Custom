@@ -52,6 +52,43 @@ Boreian OS is a passion project for those who want the best of both worlds:
 
 
 
+## Under the Hood: Deep System Tweaks ##
+
+Boreian is not just a visual skin; it's a recalibrated system. We’ve gone deep into the configuration to ensure stability and cleanliness:
+
+1. Proactive Memory Management: We’ve optimized `vm.swappiness` and other kernel parameters to ensure the system remains responsive even when RAM is nearly full. This prevents the "desktop freeze" typical for low-end hardware.
+   
+2. Unified Theme Architecture: Standard Plasma installations often scatter themes and assets across various local and system folders (`~/.local/share` vs `/usr/share`). In Boreian, everything is centralized and organized. All design assets are stored in a unified, clean directory structure, making the system easier to maintain and backup.
+   
+3. Lean & Clean: No redundant services. By hiding Wayland and focusing on a rock-solid X11 setup, we eliminated background overhead that usually slows down older GPUs.
+
+
+
+## Stability & Real-World Testing ##
+
+Boreian isn't just a theoretical concept; it’s "dogfooding" at its best.
+
+### Battle-Tested Build Process ###
+The entire ISO was built on a host system with the same low-end specifications it was designed for. Even during the resource-heavy compilation and compression phases of the ISO build, the system remained **fully responsive**. 
+Multitasking while building: Browsing the web and editing files was possible without lag, proving the superior scheduling of the **Bore-kernel** in a real-world high-load scenario.
+
+### Intelligent Boot Management (Custom GRUB) ###
+1. Safety meets clarity. The system features a manually crafted, aesthetically pleasing `grub.cfg`:
+Dependency Stability: The standard Debian kernel remains installed to satisfy system dependencies and serve as a reliable fallback.
+2. No Confusion: The custom GRUB layout makes it impossible to mix up kernels. The Bore-kernel is clearly prioritized and visually separated, ensuring you always boot into the optimized experience by default.
+
+
+
+## The Strategy: Why Debian 13 (Trixie)? ##
+
+Choosing the right foundation was critical for the Boreian project. While Debian Stable is legendary, the decision to use **Debian 13 (Trixie/Testing)** was a calculated move for long-term stability:
+
+1. Update Resilience: During development, the combination of a Vanilla 6.17 kernel and the 6.18 Bore-patch proved to be the most "immune" to system updates. This specific cross-version patching setup offers a level of stability that newer or older combinations couldn't match.
+2. The Sweet Spot: Trixie provides a modern toolchain and libraries that align perfectly with the Bore-scheduler’s requirements, ensuring that the system doesn't break when the underlying packages evolve.
+3. Immunity by Design: By choosing this base, Boreian avoids the "fragility" of many other custom builds. It’s built to last, not just to look good for a week.
+
+
+
 ### Note for Developers ###
 The magic of this system lies in the Technical Hooks. These handle hardware detection and automated performance scaling at boot. Check the /hooks directory to see how the performance specifications are implemented.
 
