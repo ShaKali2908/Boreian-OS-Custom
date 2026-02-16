@@ -1,0 +1,42 @@
+!/bin/sh
+set -e
+
+echo "--- Starte Force-Extraction & GRUB-Branding ---"
+BINARY_LIVE="binary/live"
+GRUB_CFG="binary/boot/grub/grub.cfg"
+
+#Kerneldateien kopieren, falls vorhanden, sonst installieren
+if [ -f chroot/boot/vmlinuz-6.18.0-bore-custom ]; then
+        cp chroot/boot/vmlinuz-6.18.0-bore-custom "$BINARY_LIVE/vmlinuz-bore"
+        cp chroot/boot/initrd.img-6.18.0-bore-custom "$BINARY_LIVE/initrd-bore"
+else
+        DEB_PKG=$(ls chroot/var/cache/apt/archives/linux-image-6.18.0-bore-custom*.deb 2>/dev/null | head -n 1)
+        if [ -n "$DEB_PKG" ]; then
+                dpkg-deb --fsys-tarfile "$DEB_PKG" | tar -x ./boot/vmlinuz-6.18.0-bore-custom ./boot/initrd.img-6.18.0-bore-custom
+                mv boot/vmlinuz-6.18.0-bore-custom "$BINARY_LIVE/vmlinuz-bore"
+                mv boot/initrd.img-6.18.0-bore-custom "$BINARY_LIVE/initrd-bore"
+                rm -rf boot/
+        fi
+fi
+
+#Standard-Kernel normalisieren
+for KERNEL in "$BINARY_LIVE"/vmlinuz.*; do
+        if [ -f "$KERNEL" ] && [ "$KERNEL" != "$BINARY_LIVE/vmlinuz-bore" ]; then
+                BASE=$(basename "$KERNEL" | sed 's/vmlinuz-//')
+                mv "$KERNEL" "$BINARY_LIVE/vmlinuz-$BASE" 2>/dev/null || true
+        fi
+done
+
+#Grub.cfg korrigieren
+GRUB_CFG="binary/boot/grub/grub.cfg"
+if [ -f "$GRUB_CFG" ]; then
+        sed -i 's|/live/vmlinuz-6.18.0-bore-custom|/live/vmlinuz-bore|g' "$GRUB_CFG"
+        sed -i 's|/live/initrd.img-6.18.0-bore-custom|/live/initrd-bore|g' "$GRUB_CFG"
+        sed -i '/vmlinuz-bore/s/menuentry "Debian GNU\/Linux/ menuentry "Boreian OS/g' "$GRUB_CFG"
+        sed -i 's/set default="0"/set default="0"/g' "$GRUB_CFG"
+        sed -i 's|/boot/vmlinuz|/live/vmlinuz|g' "$GRUB_CFG"
+        sed -i 's|/boot/initrd.img|/live/initrd.img|g' "$GRUB_CFG"
+fi
+
+
+
