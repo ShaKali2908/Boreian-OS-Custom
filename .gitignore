@@ -1,0 +1,19 @@
+# Temporäre Dateien von Editoren
+*~
+*.swp
+*.tmp
+
+# Systemdateien
+.DS_Store
+Thumbs.db
+
+# Live-Build Müll (falls du mal das ganze Verzeichnis syncst)
+local/
+.build/
+chroot/
+binary/
+*.iso
+*.iso.sha256
+
+# KDE/Plasma temporäre Files
+.directory
