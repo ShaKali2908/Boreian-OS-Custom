@@ -1,0 +1,18 @@
+!/bin/bash
+set -e
+
+#Anpassung Standard-User "live"
+if id "live" >/dev/null 2>&1; then
+        echo "setze Passwort für existenten User"
+        echo "live:Boreian" | chpasswd
+else 
+        echo "Erstelle User"
+        useradd -m -s /bin/bash -G sudo,audio,video,cdrom,netdev live
+        echo "live:Boreian" | chpasswd
+fi
+
+#Sudo-Rechte ohne Passwort
+echo "live ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/live
+chmod 0440 /etc/sudoers.d/live
+
+
