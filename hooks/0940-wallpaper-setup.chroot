@@ -1,0 +1,30 @@
+#!/bin/bash
+
+ln -sf /usr/share/Boreian/wallpaper/contents/images/1920x1080.jpg /usr/share/Boreian/login-background.jpg
+
+# --- 1. Kahlschlag: Alte Themes entfernen ---
+# Wir löschen die Konkurrenz physisch
+rm -rf /usr/share/desktop-base/*
+cp -r /usr/share/Boreian /usr/share/desktop-base/
+rm -rf /usr/share/Boreian
+
+# --- 2. Debian Alternatives System biegen ---
+# Wir erzwingen Boreian als das offizielle System-Theme
+ln -sf /usr/share/desktop-base/Boreian /etc/alternatives/desktop-theme
+ln -sf /etc/alternatives/desktop-theme /usr/share/desktop-base/active-theme
+
+# --- 3. KDE Wallpaper-Pfade besetzen ---
+# Wir löschen erst alte Symlinks/Ordner und setzen sie neu auf Boreian
+rm -rf /usr/share/wallpapers/Next
+rm -rf /usr/share/wallpapers/default
+
+# Alle KDE-Wege führen nun zu deinem Boreian-Bild unter desktop-base
+ln -sf /usr/share/desktop-base/Boreian/wallpaper /usr/share/wallpapers/Boreian
+ln -sf /usr/share/desktop-base/Boreian/wallpaper /usr/share/wallpapers/default
+ln -sf /usr/share/desktop-base/Boreian/wallpaper /usr/share/wallpapers/Next
+
+# --- 4. Rechte sicherstellen ---
+chmod -R 755 /usr/share/desktop-base/Boreian
+
+
+
