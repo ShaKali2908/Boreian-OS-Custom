@@ -1,0 +1,286 @@
+#!/bin/bash
+set -e
+set -x
+
+rm -rf /etc/skel/.cache/plasmashell*
+rm -rf /etc/skel/.cache/kksrc*
+
+#KDE Customization (Minimal-Panel)
+mkdir -p /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/
+cat > /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js << EOF
+var panel = new Panel;
+panel.location = "top";
+panel.height = 40;
+EOF
+
+cat > /usr/share/plasma/layout-templates/org.kde.plasma.desktop.defaultPanel/metadata.desktop << EOF
+[Desktop Entry]
+Name=Boreian Panel Layout
+Comment=Custom Minimal Layout for Bore Kernel ISO
+Type=Service
+X-KDE-ServiceTypes=Plasma/LayoutTemplate
+EOF
+
+cat > /etc/skel/.config/plasma-org.kde.plasma.desktop-appletsrc << EOF
+[General]
+configVersion=10
+[Containments][1]
+activityId=
+formfactor=2
+lastScreen=0
+location=3
+minLength=10
+maxLength=100
+plugin=org.kde.panel
+
+[Containments][1][Applets][2]
+plugin=org.kde.plasma.kickoff
+
+[Containments][1][Applets][3]
+plugin=org.kde.plasma.systemtray
+
+[Containments][1][Applets][3][Configuration]
+SystrayContainmentId=4
+
+[Containments][1][General]
+AppletOrder=2;3
+
+[Containments][4]
+activityId=
+formfactor=2
+location=3
+plugin=org.kde.plasma.private.systemtray
+
+[Containments][4][Applets][5]
+plugin=org.kde.plasma.volume
+
+[Containments][4][Applets][6]
+plugin=org.kde.plasma.networkmanagement
+
+[Containments][4][Applets][7]
+plugin=org.kde.plasma.notification
+
+[Containments][4][General]
+extraItems=org.kde.plasma.volume,org.kde.plasma.networkmanagement,org.kde.plasma.notifications
+knownItems=org.kde.plasma.volume,org.kde.plasma.networkmanagement,org.kde.plasma.notifications
+
+[Containments][1][ScreenMapping]
+0=1
+
+[Containments][1][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/wallpapers/Boreian/contents/images/1920x1080.jpg
+
+[Containments][2][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/wallpapers/Boreian/contents/images/1920x1080.jpg
+
+[SerializationSettings]
+wallpaper-file=/usr/share/wallpapers/Boreian/contents/images/1920x1080.jpg
+[Containments][1]
+Wallpaper=/usr/share/wallpapers/Boreian/contents/images/1920x1080.jpg
+Image=/usr/share/wallpapers/Boreian/contents/images/1920x1080.jpg
+EOF
+
+cat > /etc/skel/.config/plasmashellrc << EOF
+[PlasmaViews][Panel 1]
+resourceId=org.kde.plasma.desktop.defaultPanel
+alignment=132
+floating=0
+panelLengthMode=1
+panelVisibility=1
+
+[PlasmaViews][Panel 1][Defaults]
+thickness=40
+EOF
+
+
+#Fenstereffekte und Slash
+mkdir -p /etc/skel/.local/share/color-schemes
+cp /usr/share/color-schemes/OrchisDark.colors /etc/skel/.local/share/color-schemes/ 2>/dev/null || true
+mkdir -p /etc/xdg
+cat > /etc/xdg/kdeglobals << EOF
+[KDE]
+lookAndFeelPackage=Boreian
+[KSplash]
+Engine=KSplashQML
+Theme=LightbulbSplash3DEndeavour
+[Icons]
+Theme=Azure-Glassy-Dark-Icons
+[General]
+ColorScheme=OrchisDark
+Name=OrchisDark
+widgetStyle=Breeze
+EOF
+chmod -R 644 /etc/xdg/kdeglobals
+
+cat > /etc/skel/.config/ksplashrc << EOF
+[General]
+Engine=KSplashQML
+Theme=LightbulbSplash3DEndeavour
+EOF
+
+cat > /etc/skel/.config/klaunchrc << EOF
+[BusyCursorSettings]
+Blinking=false
+EOF
+
+
+#Cursor dauerhaft setzen
+cat > /etc/skel/.config/kcminputrc << EOF
+[Mouse]
+cursorSize=24
+cursorTheme=Night-Diamond
+EOF
+
+rm -rf /usr/share/icons/default
+mkdir -p /usr/share/icons/default
+cat > /usr/share/icons/default/index.theme << EOF
+[Icon Theme]
+Name=Default
+Comment= Default Cursor Theme
+Inherits=Night-Diamond
+EOF
+rm -rf /usr/share/icons/Adwaita
+
+cat > /etc/skel/.Xresources << EOF
+Xcursor.theme: Night-Diamond
+Xcursor.size: 24
+EOF
+
+mkdir -p /etc/skel/.config/gtk-3.0
+mkdir -p /etc/skel/.config/gtk-4.0
+cat > /etc/skel/.config/gtk-3.0/settings.ini << EOF
+[Settings]
+gtk-cursor-theme-name=Night-Diamond
+gtk-cursor-theme-size=24
+gtk-icon-theme-name=Azure-Glassy-Dark-Icons
+gtk-fallback-icon-theme=candy-icons
+EOF
+
+cat > /etc/skel/.config/gtk-4.0/settings.ini << EOF
+[Settings]
+gtk-cursor-theme-name=Night-Diamond
+gtk-cursor-theme-size=24
+gtk-icon-theme-name=Azure-Glassy-Dark-Icons
+gtk-fallback-icon-theme=candy-icons
+EOF
+
+cat > /etc/skel/.Xresources << EOF
+Xcursor.theme: Night-Diamond
+Xcursor.size: 24
+EOF
+
+rm -f /var/lib/systemd/coredump/* 2>/dev/null || true
+
+rm -rf /etc/alternatives/x-cursor-theme
+ln -sf /usr/share/icons/Night-Diamond/cursor.theme /etc/alternatives/x-cursor-theme
+ln -s /usr/share/icons/Night-Diamond /usr/share/icons/Adwaita
+
+#Fensterdekoration
+cat > /etc/skel/.config/kwinrc << EOF
+[Plugins]
+kwin6_effect_incinerateEnabled=true
+[Compositing]
+Enabled=true
+OpenGLIsUnsafe=false
+XRenderSmoothScale=true
+[org.kde.kdecoration2]
+ButtonsOnLeft=
+ButtonsOnRight=IAX
+Library=org.kde.kwin.aurorae
+Theme=Ant-Dark
+EOF
+cp /etc/xdg/kdeglobals /etc/skel/.config/kdeglobals
+
+cat > /etc/skel/.config/plasmarc << EOF
+[Theme]
+name=Ant-Dark
+[LookAndFeel]
+Package=Boreian
+EOF
+
+# --- Desktop-Base Overrides (Debian Defaults ausschalten) ---
+mkdir -p /usr/share/desktop-base/plasma-config/
+cp /etc/xdg/kdeglobals /usr/share/desktop-base/plasma-config/kdeglobals
+
+# Damit der Setup-Wizard nicht alles überschreibt
+mkdir -p /etc/skel/.local/share/plasma
+touch /etc/skel/.local/share/plasma/plasma-setup-wizard-finished
+touch /etc/skel/.config/kdedefaults
+touch /etc/skel/.config/plasma-localerc
+touch /etc/skel/.local/share/plasma/known_devices
+
+#Kopien in den User
+mkdir -p /home/user/.config
+cp -rv /etc/skel/.config/* /home/user/.config/
+mkdir -p /home/user/.local/share/plasma
+cp -rv /etc/skel/.local/share/plasma/* /home/user/.local/share/plasma/
+chown -R 1000:1000 /home/user
+
+#Global Theme aktivieren und erzwingen
+mkdir -p /etc/skel/.config/plasma-workspace/env
+cat > /etc/skel/.config/plasma-workspace/env/theme_force.sh << EOF
+#!/bin/bash
+rm -rf $HOME/.cache/plasmashell/
+lookandfeeltool -a Boreian & plasma-apply-wallpaper /usr/share/wallpapers/Boreian/contents/images/1920x1080.jpg 2>/dev/null
+kwriteconfig6 --file \$HOME/.config/kcminputrc --group Mouse --key cursorTheme "Night-Diamond"
+kwriteconfig6 --file \$HOME/.config/kcminputrc --group Mouse --key cursorSize 24
+xsetroot -cursor_name Night-Diamond 2>/dev/null
+if command -v gsettings >/dev/null; then
+        gsettings set org.gnome.desktop.interface cursor-theme 'Night-Diamond'
+        gsettings set org.gnome.desktop.interface cursor-size 24
+fi
+chattr +i \$HOME/.config/gtk-3.0/settings.ini 2>/dev/null
+chattr +i \$HOME/.config/gtk-4.0/settings.ini 2>/dev/null
+chattr +i \$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc 2>/dev/null
+chattr +i \$HOME/.config/kdeglobals 2>/dev/null
+chattr +i \$HOME/.config/kcminputrc 2>/dev/null
+qdbus6 org.kde.KWin /KWin reconfigure
+EOF
+
+
+mkdir -p /home/user/.config/plasma-workspace/env
+cp /etc/skel/.config/plasma-workspace/env/theme_force.sh /home/user/.config/plasma-workspace/env/theme_force.sh
+chmod +x /etc/skel/.config/plasma-workspace/env/theme_force.sh
+chmod +x /home/user/.config/plasma-workspace/env/theme_force.sh
+
+#Rechte-Reparatur
+#Besitzrechte aller Themes
+chown -R root:root /etc/skel
+chown -R root:root /usr/share/icons/
+chown -R root:root /usr/share/plasma/look-and-feel/
+chown -R root:root /usr/share/aurorae/themes/
+chown -R root:root /usr/share/themes/
+chown -R root:root /usr/share/color-schemes/
+chown -R root:root /usr/share/sddm/themes/
+#Verzeichnisrechte 755
+chmod -R 755 /usr/share/sddm/themes/Boreian
+chmod -R 755 /etc/skel
+chmod +x /etc/skel/.config/plasma-workspace/env/theme_force.sh
+find /usr/share/icons -type d -exec chmod 755 {} +
+find /usr/share/plasma/look-and-feel -type d -exec chmod 755 {} +
+find /usr/share/aurorae/themes -type d -exec chmod 755 {} +
+find /usr/share/themes -type d -exec chmod 755 {} +
+#Dateirechte 644
+find /usr/share/icons -type f -exec chmod 644 {} +
+find /usr/share/plasma/look-and-feel -type f -exec chmod 644 {} +
+find /usr/share/aurorae/themes -type f -exec chmod 644 {} +
+find /usr/share/themes -type f -exec chmod 644 {} +
+chmod 644 /usr/share/color-schemes/*.colors
+#Skel-Verzeichnis
+chmod -R 755 /etc/skel
+find /etc/skel -type f -exec chmod 644 {} +
+find /etc/skel -type d -exec chmod 755 {} +
+#Desktop-Dateien
+find /etc/skel -name "*.desktop" -exec chmod +x {} +
+
+#Schreibschutz für Theme-Konfigurationen
+chmod 444 /usr/share/icons/default/index.theme
+
+
+
+
+
+
+
+  
+
