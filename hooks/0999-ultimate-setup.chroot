@@ -1,0 +1,135 @@
+!/bin/bash
+set -x
+set -e
+
+#Hardware-Fix (Kernel & GPU)
+apt-get update
+apt-get install -y sddm firmware-amd-graphics kmod
+echo "amdgpu" >> /etc/initramfs-tools/modules
+echo "radeon" >> /etc/initramfs-tools/modules
+mkdir -p /etc/modprobe.d
+echo "options amdgpu si_support=1 cik_support=1" > /etc/modprobe.d/amdgpu.conf
+plymouth-set-default-theme details
+depmod -a 6.18.0-bore-custom
+update-initramfs -u -k 6.18.0-bore-custom
+
+#Wayland verstecken ohne Deinstallation
+mkdir -p /usr/share/wayland-sessions/disabled
+mv /usr/share/wayland-sessions/*.desktop /usr/share/wayland-sessions/disabled/ || true
+#Paket-Check
+if [ ! -f /usr/bin/startplasma-x11 ]; then
+        apt install -y plasma-workspace-x11
+fi
+#Update
+update-alternatives --set x-session-manager /usr/bin/startplasma-x11 || true
+
+
+#Tastatur
+mkdir -p /etc/X11/xorg.conf.d
+cat > /etc/X11/xorg.conf.d/00-keyboard.conf << EOF
+Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "de"
+        Option "XkbVariant" "nodeadkeys"
+EndSection
+EOF
+
+mkdir -p /etc/default
+cat > /etc/default/keyboard << EOF
+XKBMODEL="pc105"
+XKBLAYOUT="de"
+XKBVARIANT="nodeadkeys"
+XKBOPTIONS=""
+BACKLIGHT=""
+EOF
+echo "KEYMAP=de-latin1-nodeadkeys" > /etc/vconsole.conf
+
+cat > /etc/skel/.config/kxbrc << EOF
+[Layout]
+DisplayNames=,
+LayoutList=de
+LayoutLoopCount=-1
+Model=pc105
+Options=
+ResetOldOptions=false
+SwitchMode=Global
+Use=true
+VariantList=nodeadkeys
+EOF
+
+#Lösche globalen Ordner
+rm -f /etc/sddm.conf
+
+#SDDM schützen
+if [ -d /etc/sddm.conf.d ]; then
+        find /etc/sddm.conf.d/ -type f ! -name '99-Boreian-settings.conf' -delete || true
+fi
+
+#Feinjustierung
+if [ -f /etc/sddm.conf.d/99-Boreian-settings.conf ]; then
+        sed -i 's/^Session=.*$/Session=plasma/' /etc/sddm.conf.d/99-Boreian-settings.conf
+fi
+
+#Curser
+mkdir -p /etc/sddm.conf.d
+cat > /etc/sddm.conf.d/theme.conf << EOF
+[Theme]
+Current=Boreian
+CursorTheme=Night-Diamond
+Session=plasma
+Relogin=false
+Display-Server=x11
+EOF
+chmod -R 755 /etc/sddm.conf.d
+chmod 644 /etc/sddm.conf.d/theme.conf
+
+update-alternatives --set x-cursor-theme /usr/share/icons/Night-Diamond || true
+
+#Verzögerung ins SDDM einbauen
+mkdir -p /etc/systemd/system/sddm.service.d
+cat > /etc/systemd/system/sddm.service.d/override.conf << EOF
+[Service]
+ExecStartPre=/bin/sleep 5
+EOF
+
+#Graphik-Backend-Fix
+echo "XDG_SESSION_TYPE=x11" >> /etc/environment
+echo "QT_QPA_PLATFORM=xcb" >> /etc/environment
+
+#Designs für nach der Installation festschreiben
+mkdir -p /etc/xdg/autostart/
+cat > /etc/xdg/autostart/Boreian-firstrun.desktop << EOF
+[Desktop Entry]
+Type=Application
+Name=Boreian Setup
+Exec=/usr/local/bin/Boreian-hwf.sh
+OnlyShowIn=KDE;
+X-KDE-Autostart-Phase=2
+EOF
+
+#Kernel- und Systemoptimierung
+mkdir -p /etc/sysctl.d
+cat > /etc/sysctl.d/99-bore-performance.conf << EOF
+kernel.sched_bore = 1
+vm.swappiness = 10
+vm.vfs_cache_pressure = 50
+vm.dirty_ratio = 10
+vm.dirty_background_ratio = 5
+EOF
+
+echo 'ACTION=="add|change", SUBSYSTEM=="block", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}=="bfq"' > /etc/udev/rules.d/60-scheduler.rules
+
+#Cairo-Dock-Autostart
+if [ -f /etc/skel/.config/autostart/cairo-dock.desktop ]; then
+        chmod +x /etc/skel/.config/autostart/cairo-dock.desktop
+fi
+
+#Tastatur
+chmod 755 /etc/default
+chmod 755 /etc/X11/xorg.conf.d
+chmod 644 /etc/default/keyboard
+chmod 644 /etc/vconsole.conf
+chmod 644 /etc/sysctl.d/99-bore-performance.conf
+chmod 644 /etc/xdg/autostart/Boreian-firstrun.desktop
+
