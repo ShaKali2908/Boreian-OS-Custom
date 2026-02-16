@@ -1,0 +1,10 @@
+{
+	"KPackageStructure": "Plasma/Wallpaper",
+	"KPlugin": {
+		"Id": "Boreian",
+		"Name": "Boreian Wallpaper",
+		"Author": "Boreian Team",
+		"Version": "1.0"
+		"ServiceTypes": ["Plasma/Wallpaper"]
+	}
+}
